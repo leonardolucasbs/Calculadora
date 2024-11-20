@@ -1,47 +1,75 @@
-import os
-#função que limpa a tela
-def limpa_tela():
-    os.system("cls" if os.name == "nt" else "clear") 
+def op():
+    print("      Opções       ")
+    print("  1 - Adição       ")
+    print("  2 - Subtração    ")
+    print("  3 - Multiplicação ")
+    print("  4 - Divisão      ")
+    print("  0 - Para sair    ")
 
-# Função principal do programa
-def calculadora():
-    numero1 = int(input("Digite o primeiro número: "))
-    numero2 = int(input("Digite o segundo número: "))
+def fabrica_de_funcoes(operacao):
+    # Funções definidas internamente para cada operação
+    def soma(*args):
+        return sum(args)
 
-    while True:  # Loop infinito até que o usuário decida sair
-        limpa_tela()
-        print("      Opções       ")
-        print("  1 - Adição       ")
-        print("  2 - Subtração    ")
-        print("  3 - Multiplicação ")
-        print("  4 - Divisão      ")
-        print("  0 - Para sair    ")
+    def subtracao(*args):
+        resultado = args[0]
+        for num in args[1:]:
+            resultado -= num
+        return resultado
 
-        opcao = int(input("Escolha uma opção: "))
+    def multiplicacao(*args):
+        resultado = 1
+        for num in args:
+            resultado *= num
+        return resultado
 
-        match opcao:
-            case 1:
-                print(f"{numero1} + {numero2} = {numero1 + numero2}")
-            case 2:
-                print(f"{numero1} - {numero2} = {numero1 - numero2}")
-            case 3:
-                print(f"{numero1} x {numero2} = {numero1 * numero2}")
-            case 4:
-                if numero2 != 0:  # Verifica se o divisor é zero
-                    print(f"{numero1} / {numero2} = {numero1 / numero2}")
-                else:
-                    print("Erro: Não é possível dividir por zero.")
-            case 0:
-                print("O programa foi encerrado!")
-                return  # Sai da função e encerra o programa
-            case _:
-                print("Opção inválida. Por favor, escolha uma opção válida.")
+    def divisao(*args):
+        resultado = args[0]
+        for num in args[1:]:
+            if num == 0:
+                raise ValueError("Divisão por zero não é permitida.")
+            resultado /= num
+        return resultado
 
-        # Pergunta se o usuário deseja realizar outra operação
-        erro = input("Para realizar outra operação digite [1] para sim e [2] para não: ")
-        if erro != '1':
-            print("Programa encerrado!")
-            break  # Sai do loop se o usuário não quiser continuar
+    # Retorna a função correspondente com base na operação solicitada
+    if operacao == "soma":
+        return soma
+    elif operacao == "subtracao":
+        return subtracao
+    elif operacao == "multiplicacao":
+        return multiplicacao
+    elif operacao == "divisao":
+        return divisao
+    else:
+        raise ValueError("Operação inválida.")
 
-# Chama a função principal
-calculadora()
+# Entrada dos números
+numeros = list(map(float, input("Digite números separados por espaço: ").split()))
+op()
+opcao = int(input("Digite sua opção: "))
+
+# Processamento das operações com base na escolha
+match opcao:
+    case 1:
+        adicao = fabrica_de_funcoes("soma")
+        resultado = adicao(*numeros)  # Desempacota a lista em argumentos individuais
+        print("Resultado da soma:", resultado)
+    case 2:
+        subtrair = fabrica_de_funcoes("subtracao")
+        resultado = subtrair(*numeros)
+        print("Resultado da subtração:", resultado)
+    case 3:
+        multiplicar = fabrica_de_funcoes("multiplicacao")
+        resultado = multiplicar(*numeros)
+        print("Resultado da multiplicação:", resultado)
+    case 4:
+        dividir = fabrica_de_funcoes("divisao")
+        try:
+            resultado = dividir(*numeros)
+            print("Resultado da divisão:", resultado)
+        except ValueError as e:
+            print(e)
+    case 0:
+        print("Saindo...")
+    case _:
+        print("Opção inválida.")
